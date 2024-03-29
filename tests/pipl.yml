@@ -1,0 +1,16 @@
+workflow:
+  name: Test pipeline
+  rules:
+    - if: $CI_COMMIT_TAG
+      variables:
+        ENV: dev  # dev|test|prod
+
+
+stages:
+  - test
+  - build
+  - deploy
+
+
+variables:
+  AWS_ACC_ID: 123456789
