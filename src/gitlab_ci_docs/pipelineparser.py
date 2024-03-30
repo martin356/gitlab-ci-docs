@@ -45,12 +45,20 @@ class Variable:
         return self._required
 
     @property
+    def required_str(self) -> str:
+        return 'Yes' if self._required else 'No'
+
+    @property
     def optional(self) -> bool:
         return not self._required
 
     @property
     def choices(self) -> List[str]:
         return self._choices
+
+    @property
+    def choices_str(self) -> str:
+        return ' '.join(self._choices)
 
     @property
     def typename(self) -> str:
