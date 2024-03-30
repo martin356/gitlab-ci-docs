@@ -1,16 +1,16 @@
 from basetestcase import BaseTestCase
-from gitlab_ci_docs.pipelineparser import Variable
-from gitlab_ci_docs.errors import BadVariableCommentFormatError
+from glcidocs.pipelineparser import Variable
+from glcidocs.errors import BadVariableCommentFormatError
 
 
 class VriableTestCase(BaseTestCase):
 
     def test_parse_comment__choices(self):
         comments = [
-            ('dev', ['dev']),
-            ('dev|test', ['dev', 'test']),
-            ('dev|dev', ['dev']),
-            ('dev|test|prod', ['dev', 'test', 'prod'])
+            ('# dev', ['dev']),
+            ('#  dev|test', ['dev', 'test']),
+            ('#dev|dev', ['dev']),
+            ('# dev|test|prod', ['dev', 'test', 'prod'])
         ]
         for comment, choices in comments:
             v = Variable('env', 'dev', comment)
@@ -21,7 +21,7 @@ class VriableTestCase(BaseTestCase):
 
     def test_parse_comment__choices_special_chars(self):
         for char in '-_.':
-            v = Variable('env', 'dev', comment=f'dev{char}dev')
+            v = Variable('env', 'dev', comment=f'# dev{char}dev')
             self.assertEqual(False, v.required)
             self.assertEqual(True , v.optional)
             self.assertEqual([f'dev{char}dev'], v.choices)
@@ -34,8 +34,8 @@ class VriableTestCase(BaseTestCase):
 
     def test_parse_comment__typename(self):
         comments = [
-            (':str', 'str'),
-            (':blabli', 'blabli')
+            ('#:str', 'str'),
+            ('#   :blabli', 'blabli')
         ]
         for comment, typename in comments:
             v = Variable('env', 'dev', comment)
@@ -45,7 +45,7 @@ class VriableTestCase(BaseTestCase):
             self.assertEqual(typename, v.typename)
 
     def test_parse_comment__typename_invalid_chars(self):
-        comments = [f':dev{char}dev' for char in '*/";,:-_+']
+        comments = [f'# :dev{char}dev' for char in '*/";,:-_+']
         for c in comments + ['::str', ':str|dev']:
             with self.assertRaises(BadVariableCommentFormatError):
                 Variable('env', 'dev', c)
@@ -53,9 +53,9 @@ class VriableTestCase(BaseTestCase):
 
     def test_parse_comment__required_typename(self):
         comments = [
-            ('required :str', 'str'),
-            ('required :blabli','blabli'),
-            ('required:str','str')
+            ('# required :str', 'str'),
+            ('#required :blabli','blabli'),
+            ('#  required:str','str')
         ]
         for comment, typename in comments:
             v = Variable('env', 'dev', comment)
@@ -66,10 +66,10 @@ class VriableTestCase(BaseTestCase):
 
     def test_parse_comment__required_choices(self):
         comments = [
-            ('required dev', ['dev']),
-            ('required dev|test', ['dev', 'test']),
-            ('required dev|dev', ['dev']),
-            ('required dev|test|prod', ['dev', 'test', 'prod'])
+            ('# required dev', ['dev']),
+            ('# required dev|test', ['dev', 'test']),
+            ('# required dev|dev', ['dev']),
+            ('# required dev|test|prod', ['dev', 'test', 'prod'])
         ]
         for comment, choices in comments:
             v = Variable('env', 'dev', comment)
@@ -79,7 +79,7 @@ class VriableTestCase(BaseTestCase):
             self.assertEqual(None, v.typename)
 
     def test_parse_comment__required(self):
-        v = Variable('env', 'dev', comment='required')
+        v = Variable('env', 'dev', comment='# required')
         self.assertEqual(True, v.required)
         self.assertEqual(False, v.optional)
         self.assertEqual([], v.choices)

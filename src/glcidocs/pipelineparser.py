@@ -2,9 +2,8 @@ import re
 
 from ruamel.yaml import YAML
 from typing import Dict, List
-from ruamel.yaml import CommentToken
 
-from gitlab_ci_docs.errors import BadVariableCommentFormatError
+from glcidocs.errors import BadVariableCommentFormatError
 
 
 class Variable:

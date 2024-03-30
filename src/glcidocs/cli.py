@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
-from gitlab_ci_docs.pipelineparser import CiFileParser
-from gitlab_ci_docs.docsgen import HTMLBuilder
+from glcidocs.pipelineparser import CiFileParser
+from glcidocs.docsgen import HTMLBuilder
 
 
 def read_doc_file(file_path: str|Path) -> List[str]:
@@ -19,7 +19,6 @@ def run(ci_file_path: str|Path, doc_file_path: str|Path) -> str:
     docs = HTMLBuilder(workflow).docs
 
     docs_token = '<!--PIPELINE_DOCS-->'
-    # output_docs = f'{docs_token}\n{docs}\n{docs_token}'
 
     begin_docs_line_idx = None
     end_docs_line_idx = None
@@ -35,7 +34,6 @@ def run(ci_file_path: str|Path, doc_file_path: str|Path) -> str:
 
     if begin_docs_line_idx is None:
         out_lines.insert(0, f'{docs_token}\n{docs}\n{docs_token}\n\n')
-        # out_lines = [f'{docs_token}\n', docs, '\n\n'] + out_lines
     elif end_docs_line_idx is None:
         out_lines.insert(begin_docs_line_idx+1, f'{docs}\n{docs_token}\n\n')
     else:

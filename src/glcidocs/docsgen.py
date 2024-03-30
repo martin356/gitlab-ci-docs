@@ -1,5 +1,5 @@
 from typing import List, Dict
-from gitlab_ci_docs.pipelineparser import Workflow, Rule
+from glcidocs.pipelineparser import Workflow, Rule
 
 
 class HTMLBuilder:

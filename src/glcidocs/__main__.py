@@ -1,5 +1,5 @@
 import argparse
-import gitlab_ci_docs.cli
+import glcidocs.cli
 
 
 def parse_arguments():
@@ -12,4 +12,4 @@ def parse_arguments():
 if __name__ == '__main__':
     args = parse_arguments()
 
-    gitlab_ci_docs.cli.run(args.ci_file)
+    glcidocs.cli.run(args.ci_file, args.doc_file)
