@@ -6,7 +6,7 @@ class HTMLBuilder:
 
     def __init__(self, workflow: Workflow):
         self._show_pipelinename_column = False
-        headers = ['Trigger', 'Variable', 'Required', 'Type', 'Choices', 'Default']
+        headers = ['Trigger', 'Variable', 'Default value', 'Required', 'Type', 'Choices']
         if workflow.pipeline_name_in_rules:
             headers.insert(0, 'Pipeline name')
             self._show_pipelinename_column = True
@@ -19,10 +19,10 @@ class HTMLBuilder:
     def create_rule_rows(self, rule: Rule) -> str:
         get_row_var_cells = lambda v: [
             {'value': v.name},
+            {'value': v.value},
             {'value': v.required_str},
             {'value': v.typename if v.typename else '-'},
-            {'value': v.choices_str if v.choices_str else '-'},
-            {'value': v.value}
+            {'value': v.choices_str if v.choices_str else '-'}
         ]
         pipeline_name_row = [{'value': rule.pipeline_name, 'rowspan': len(rule.variables)}] if self._show_pipelinename_column else []
         first_row = self.row(
