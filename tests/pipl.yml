@@ -8,6 +8,7 @@ workflow:
         MODE: bla #  required art|dep
     - if: $CI_PIPELINE_SOURCE == 'push'
       variables:
+        _PIPELINE_NAME: hmm
         ENV: stage  # required dev|test|prod
         ACC_ID: null  # required :str
 

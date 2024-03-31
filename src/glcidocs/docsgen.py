@@ -4,31 +4,34 @@ from glcidocs.pipelineparser import Workflow, Rule
 
 class HTMLBuilder:
 
-    columns_headers = ['Trigger', 'Variable', 'Required', 'Type', 'Choices', 'Default']
-
     def __init__(self, workflow: Workflow):
-        self._docs = self.table(self.columns_headers, workflow.rules)
+        self._show_pipelinename_column = False
+        headers = ['Trigger', 'Variable', 'Required', 'Type', 'Choices', 'Default']
+        if workflow.pipeline_name_in_rules:
+            headers.insert(0, 'Pipeline name')
+            self._show_pipelinename_column = True
+        self._docs = self.table(headers, workflow.rules)
 
     @property
     def docs(self) -> str:
         return self._docs
 
     def create_rule_rows(self, rule: Rule) -> str:
-        first_row = self.row([
-            {'value': f'if: {rule.condition}', 'rowspan': len(rule.variables)},
-            {'value': rule.variables[0].name},
-            {'value': rule.variables[0].required_str},
-            {'value': rule.variables[0].typename if rule.variables[0].typename else '-'},
-            {'value': rule.variables[0].choices_str if rule.variables[0].choices_str else '-'},
-            {'value': rule.variables[0].value}
-        ])
-        other_rows = '\n'.join([self.row([
+        get_row_var_cells = lambda v: [
             {'value': v.name},
             {'value': v.required_str},
             {'value': v.typename if v.typename else '-'},
             {'value': v.choices_str if v.choices_str else '-'},
             {'value': v.value}
-        ]) for v in rule.variables[1:]])
+        ]
+        pipeline_name_row = [{'value': rule.pipeline_name, 'rowspan': len(rule.variables)}] if self._show_pipelinename_column else []
+        first_row = self.row(
+            pipeline_name_row
+            + [{'value': f'if: {rule.condition}', 'rowspan': len(rule.variables)}]
+            + get_row_var_cells(rule.variables[0])
+        )
+        print(f'-{first_row}-')
+        other_rows = '\n'.join([self.row(get_row_var_cells(v)) for v in rule.variables[1:]])
 
         return first_row + other_rows
 

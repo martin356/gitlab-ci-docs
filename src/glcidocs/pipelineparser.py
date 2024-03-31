@@ -15,17 +15,22 @@ class Variable:
     _regex = property(lambda s: f'^#\s*{s._regex_group_req}{s._regex_group_type}{s._regex_group_opt}$')
 
     def __init__(self, name: str, value: str, comment: str):
-        comment = comment.strip()
-        if (matched := re.fullmatch(self._regex, comment)) is None:
-            raise BadVariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
-        if matched['options'] and matched['type']:
-            raise BadVariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
-
         self._name = name
         self._value = value
-        self._required = bool(matched['required'])
-        self._choices = list(set(matched['options'].split('|'))) if matched['options'] else []
-        self._typename = matched['type'][1:] if matched['type'] else None
+        self._required = None
+        self._choices = []
+        self._typename = ''
+
+        if comment:
+            comment = comment.strip()
+            if (matched := re.fullmatch(self._regex, comment)) is None:
+                raise BadVariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
+            if matched['options'] and matched['type']:
+                raise BadVariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
+
+            self._required = bool(matched['required'])
+            self._choices = list(set(matched['options'].split('|'))) if matched['options'] else []
+            self._typename = matched['type'][1:] if matched['type'] else None
 
     @property
     def name(self) -> str:
@@ -45,11 +50,11 @@ class Variable:
 
     @property
     def required_str(self) -> str:
-        return 'Yes' if self._required else 'No'
+        return None if self._required is None else 'Yes' if self._required else 'No'
 
     @property
     def optional(self) -> bool:
-        return not self._required
+        return None if self._required is None else not self._required
 
     @property
     def choices(self) -> List[str]:
@@ -57,7 +62,7 @@ class Variable:
 
     @property
     def choices_str(self) -> str:
-        return ' '.join(self._choices)
+        return ' '.join(self._choices) if self._choices else ''
 
     @property
     def typename(self) -> str:
@@ -67,14 +72,16 @@ class Variable:
 class Rule:
 
     def __init__(self, rule: Dict):
+        self._pipeline_name = ''
         self._condition = rule['if']
         self._variables = [
             Variable(
                 name=key,
                 value=rule['variables'][key],
-                comment=rule['variables'].ca.items[key][2].value
-            ) for key in rule['variables']
+                comment=c[2].value if (c := rule['variables'].ca.items.get(key, None)) else ''
+            ) for key in rule['variables'] if key != '_PIPELINE_NAME'
         ]
+        self._pipeline_name = rule['variables'].get('_PIPELINE_NAME', '')
 
     @property
     def condition(self) -> str:
@@ -84,15 +91,28 @@ class Rule:
     def variables(self) -> List[Variable]:
         return self._variables
 
+    @property
+    def pipeline_name(self) -> str:
+        return self._pipeline_name
+
 
 class Workflow:
 
     def __init__(self, workflow: Dict):
+        self._pipeline_name = workflow.get('PIPELINE_NAME', None)
         self._rules = [Rule(r) for r in workflow['rules']]
 
     @property
     def rules(self) -> List[Rule]:
         return self._rules
+
+    @property
+    def pipeline_name(self) -> str:
+        return self._pipeline_name
+
+    @property
+    def pipeline_name_in_rules(self):
+        return any(r.pipeline_name for r in self.rules)
 
 
 class CiFileParser:
