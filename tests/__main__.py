@@ -5,20 +5,20 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'src'))
 import argparse
 import unittest
 import importlib
-import test_cli
+import test_create_docs
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cli', action='store_true')
+    parser.add_argument('--dry-run', action='store_true')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_arguments()
 
-    if args.cli:
-        test_cli.run_cli()
+    if args.dry_run:
+        test_create_docs.run_create_docs()
     else:
         excludes = []
 

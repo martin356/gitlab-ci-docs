@@ -30,7 +30,6 @@ class HTMLBuilder:
             + [{'value': f'if: {rule.condition}', 'rowspan': len(rule.variables)}]
             + get_row_var_cells(rule.variables[0])
         )
-        print(f'-{first_row}-')
         other_rows = '\n'.join([self.row(get_row_var_cells(v)) for v in rule.variables[1:]])
 
         return first_row + other_rows
