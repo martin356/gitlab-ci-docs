@@ -50,5 +50,14 @@ python -m glcidocs --ci-file my_workflow.yml --doc-file myREADME.md
 ```
 
 ### Import in code
+The module *glcidocs* contains *create_docs* function. The functions consumes the same arguments as cli tool, but there are no default values set.
 ```python
+import glcidocs
+
+
+def run_create_docs():
+    docs = glcidocs.create_docs(
+        ci_file_path='my_workflow.yml',
+        docs_file_path='README.md'
+    )
 ```
