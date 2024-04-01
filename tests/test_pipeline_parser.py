@@ -6,13 +6,14 @@ from glcidocs.errors import BadVariableCommentFormatError
 class VriableTestCase(BaseTestCase):
 
     def test_parse_empty_comment(self):
-        v = Variable('env', 'dev', comment='')
-        self.assertEqual('env', v.name)
-        self.assertEqual('dev', v.value)
-        self.assertEqual(None, v.required)
-        self.assertEqual(None, v.optional)
-        self.assertEqual([], v.choices)
-        self.assertEqual('', v.typename)
+        for comment in ['', '  ', '#', '#  ']:
+            v = Variable('env', 'dev', comment=comment)
+            self.assertEqual('env', v.name)
+            self.assertEqual('dev', v.value)
+            self.assertEqual(None, v.required)
+            self.assertEqual(None, v.optional)
+            self.assertEqual([], v.choices)
+            self.assertEqual('', v.typename)
 
     def test_parse_comment__choices(self):
         comments = [

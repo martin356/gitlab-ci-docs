@@ -1,10 +1,11 @@
+from __future__ import annotations
 from pathlib import Path
 from typing import List
 from glcidocs.pipelineparser import CiFileParser
 from glcidocs.docsgen import HTMLBuilder
 
 
-__version__ = '0.0.1-beta.1'
+__version__ = '0.0.1-beta.3'
 
 
 def read_doc_file(file_path: str|Path) -> List[str]:

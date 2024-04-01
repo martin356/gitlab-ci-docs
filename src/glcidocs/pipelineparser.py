@@ -21,8 +21,7 @@ class Variable:
         self._choices = []
         self._typename = ''
 
-        if comment:
-            comment = comment.strip()
+        if (comment := comment.strip()) and comment != '#':
             if (matched := re.fullmatch(self._regex, comment)) is None:
                 raise BadVariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
             if matched['options'] and matched['type']:
