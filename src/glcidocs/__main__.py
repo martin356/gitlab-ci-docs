@@ -1,5 +1,5 @@
 import argparse
-import glcidocs.cli
+import glcidocs
 
 
 def parse_arguments():
@@ -12,4 +12,4 @@ def parse_arguments():
 if __name__ == '__main__':
     args = parse_arguments()
 
-    glcidocs.cli.run(args.ci_file, args.doc_file)
+    glcidocs.create_docs(args.ci_file, args.doc_file)
