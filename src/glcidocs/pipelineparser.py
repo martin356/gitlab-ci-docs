@@ -78,9 +78,9 @@ class Rule:
                 name=key,
                 value=rule['variables'][key],
                 comment=c[2].value if (c := rule['variables'].ca.items.get(key, None)) else ''
-            ) for key in rule['variables'] if key != '_PIPELINE_NAME'
+            ) for key in rule.get('variables', {}) if key != '_PIPELINE_NAME'
         ]
-        self._pipeline_name = rule['variables'].get('_PIPELINE_NAME', '')
+        self._pipeline_name = rule.get('variables').get('_PIPELINE_NAME', '')
 
     @property
     def condition(self) -> str:
@@ -97,9 +97,15 @@ class Rule:
 
 class Workflow:
 
+    _regex_pipeline_source = '\$CI_PIPELINE_SOURCE\s==\s[\'"]?(web|pipeline|api|trigger)[\'"]?'
+
+    @classmethod
+    def _include_rule(cls, rule_if: str) -> bool:
+        return bool(re.search(cls._regex_pipeline_source, rule_if))
+
     def __init__(self, workflow: Dict):
-        self._pipeline_name = workflow.get('PIPELINE_NAME', None)
-        self._rules = [Rule(r) for r in workflow['rules']]
+        self._pipeline_name = workflow.get('name', '')
+        self._rules = [Rule(r) for r in workflow['rules'] if self._include_rule(r['if'])]
 
     @property
     def rules(self) -> List[Rule]:

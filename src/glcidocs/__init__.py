@@ -5,7 +5,7 @@ from glcidocs.pipelineparser import CiFileParser
 from glcidocs.docsgen import HTMLBuilder
 
 
-__version__ = '0.0.1-beta.3'
+__version__ = '0.0.1-beta.4'
 
 
 def read_doc_file(file_path: str|Path) -> List[str]:

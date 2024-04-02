@@ -6,11 +6,13 @@ workflow:
         ENV: dev  # dev|test|prod
         ACC_ID: null  # :str
         MODE: bla #  required art|dep
-    - if: $CI_PIPELINE_SOURCE == 'push'
+    - if: $CI_PIPELINE_SOURCE == 'api'
       variables:
         _PIPELINE_NAME: hmm
         ENV: stage  # required dev|test|prod
         ACC_ID: null  # required :str
+    - if: $CI_COMMIT_BRANCH != 'main'
+      when: never
 
 
 stages:
@@ -21,3 +23,4 @@ stages:
 
 variables:
   AWS_ACC_ID: 123456789
+  ENV: dev  # required stage|test

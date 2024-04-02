@@ -1,6 +1,20 @@
 from basetestcase import BaseTestCase
-from glcidocs.pipelineparser import Variable
+from glcidocs.pipelineparser import Variable, Workflow
 from glcidocs.errors import BadVariableCommentFormatError
+
+
+class WorkflowTestCase(BaseTestCase):
+
+    def test_parse_rule_if_condition__include_rule(self):
+        rules = [r for source in ['web', 'pipeline', 'trigger', 'api'] for r in [
+            f'$CI_PIPELINE_SOURCE == \'{source}\'',
+            f'$CI_PIPELINE_SOURCE == "{source}"',
+            f'$CI_PIPELINE_SOURCE == {source}'
+        ]]
+        rules += [f'$CI_COMMIT_BRANCH == "main" && {r}' for r in rules]
+        rules += [f'{r} || $CI_COMMIT_BRANCH == "main"' for r in rules]
+        for r in rules:
+            self.assertTrue(Workflow._include_rule(r))
 
 
 class VriableTestCase(BaseTestCase):
