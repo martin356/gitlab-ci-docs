@@ -1,5 +1,9 @@
+import sys
+import pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+
 import argparse
-import glcidocs
+import docsgen
 
 
 def parse_arguments():
@@ -12,4 +16,4 @@ def parse_arguments():
 if __name__ == '__main__':
     args = parse_arguments()
 
-    glcidocs.create_docs(args.ci_file, args.doc_file)
+    docsgen.create_docs(args.ci_file, args.doc_file)

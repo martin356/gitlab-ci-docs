@@ -24,8 +24,8 @@ class VriableTestCase(BaseTestCase):
             v = Variable('env', 'dev', comment=comment)
             self.assertEqual('env', v.name)
             self.assertEqual('dev', v.value)
-            self.assertEqual(None, v.required)
-            self.assertEqual(None, v.optional)
+            self.assertEqual(False, v.required)
+            self.assertEqual(True, v.optional)
             self.assertEqual([], v.choices)
             self.assertEqual('', v.typename)
 

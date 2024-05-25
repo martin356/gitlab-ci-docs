@@ -17,7 +17,7 @@ class Variable:
     def __init__(self, name: str, value: str, comment: str):
         self._name = name
         self._value = value
-        self._required = None
+        self._required = False
         self._choices = []
         self._typename = ''
 
@@ -49,11 +49,11 @@ class Variable:
 
     @property
     def required_str(self) -> str:
-        return None if self._required is None else 'Yes' if self._required else 'No'
+        return 'Yes' if self._required else 'No'
 
     @property
     def optional(self) -> bool:
-        return None if self._required is None else not self._required
+        return not self._required
 
     @property
     def choices(self) -> List[str]:
@@ -61,7 +61,7 @@ class Variable:
 
     @property
     def choices_str(self) -> str:
-        return ' '.join(self._choices) if self._choices else ''
+        return ', '.join(self._choices) if self._choices else ''
 
     @property
     def typename(self) -> str:

@@ -13,6 +13,15 @@ The output of this script is simple description (documentation) of *workflow* se
 ### Readme file
 By default, the script inserts generated table in the beggining of the file. However, it is possible to mark position in the file where the table will be inserted. The mark token is
 <br>*\<!--PIPELINE_DOCS-->*
+<table>
+<tr><th>Trigger</th><th>Variable</th><th>Default value</th><th>Required</th><th>Type</th><th>Choices</th></tr>
+<tr><td rowspan="3">if: $CI_PIPELINE_SOURCE == 'web'</td><td>ENV</td><td>dev</td><td>No</td><td>-</td><td>test, dev, prod</td></tr><tr><td>ACC_ID</td><td>None</td><td>No</td><td>str</td><td>-</td></tr>
+<tr><td>MODE</td><td>bla</td><td>Yes</td><td>-</td><td>art, dep</td></tr>
+<tr><td rowspan="3">if: $CI_PIPELINE_SOURCE == 'api'</td><td>PIPELINE_NAME</td><td>hmm</td><td>No</td><td>-</td><td>-</td></tr><tr><td>ENV</td><td>stage</td><td>Yes</td><td>-</td><td>test, dev, prod</td></tr>
+<tr><td>ACC_ID</td><td>None</td><td>Yes</td><td>str</td><td>-</td></tr>
+</table>
+<!--PIPELINE_DOCS-->
+
 If token is present, the table is insreted below it.
 
 ### Variable definition

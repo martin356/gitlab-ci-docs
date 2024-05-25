@@ -1,18 +1,22 @@
 workflow:
   name: Test pipeline
   rules:
-    - if: $CI_COMMIT_TAG
+
+    - if: $CI_PIPELINE_SOURCE == 'web'
       variables:
         ENV: dev  # dev|test|prod
         ACC_ID: null  # :str
         MODE: bla #  required art|dep
     - if: $CI_PIPELINE_SOURCE == 'api'
       variables:
-        _PIPELINE_NAME: hmm
+        PIPELINE_NAME: hmm
         ENV: stage  # required dev|test|prod
         ACC_ID: null  # required :str
     - if: $CI_COMMIT_BRANCH != 'main'
       when: never
+    - if: $CI_COMMIT_TAG
+      variables:
+        ENV: bla
 
 
 stages:
