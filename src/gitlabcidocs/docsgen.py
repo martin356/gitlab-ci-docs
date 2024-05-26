@@ -40,8 +40,8 @@ def insert_to_doc_file(docs: str, doc_file_path: str|Path) -> None:
     write_doc_file(doc_file_path, ''.join(out_lines))
 
 
-def create_docs(ci_file_path: str|Path, doc_file_path: str|Path) -> str:
-    workflow = CiFileParser(ci_file_path).workflow
+def create_docs(ci_file_path: str|Path, doc_file_path: str|Path, include_all_rules: bool) -> str:
+    workflow = CiFileParser(ci_file_path).get_workflow(include_all_rules)
     docs = HTMLBuilder(workflow).docs
     insert_to_doc_file(docs, doc_file_path)
     return docs

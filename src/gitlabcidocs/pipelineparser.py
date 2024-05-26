@@ -72,19 +72,24 @@ class Rule:
 
     def __init__(self, rule: Dict):
         self._pipeline_name = ''
-        self._condition = rule['if']
+        self._condition = rule.get('if', None)
+        self._when = rule.get('when', None)
         self._variables = [
             Variable(
                 name=key,
                 value=rule['variables'][key],
                 comment=c[2].value if (c := rule['variables'].ca.items.get(key, None)) else ''
-            ) for key in rule.get('variables', {}) if key != '_PIPELINE_NAME'
+            ) for key in rule.get('variables', {}) if key != 'PIPELINE_NAME'
         ]
-        self._pipeline_name = rule.get('variables').get('_PIPELINE_NAME', '')
+        self._pipeline_name = rule.get('variables', {}).get('PIPELINE_NAME', '')
 
     @property
     def condition(self) -> str:
         return self._condition
+
+    @property
+    def when(self):
+        return self._when
 
     @property
     def variables(self) -> List[Variable]:
@@ -103,9 +108,9 @@ class Workflow:
     def _include_rule(cls, rule_if: str) -> bool:
         return bool(re.search(cls._regex_pipeline_source, rule_if))
 
-    def __init__(self, workflow: Dict):
+    def __init__(self, workflow: Dict, include_all_rules: bool):
         self._pipeline_name = workflow.get('name', '')
-        self._rules = [Rule(r) for r in workflow['rules'] if self._include_rule(r['if'])]
+        self._rules = [Rule(r) for r in workflow['rules'] if include_all_rules or self._include_rule(r['if'])]
 
     @property
     def rules(self) -> List[Rule]:
@@ -124,9 +129,7 @@ class CiFileParser:
 
     def __init__(self, filepath: str):
         with open(filepath) as f:
-            pipeline = YAML().load(f)
-        self._workflow = Workflow(pipeline['workflow'])
+            self._pipeline = YAML().load(f)
 
-    @property
-    def workflow(self) -> Workflow:
-        return self._workflow
+    def get_workflow(self, include_all_rules: bool) -> Workflow:
+        return Workflow(self._pipeline['workflow'], include_all_rules)

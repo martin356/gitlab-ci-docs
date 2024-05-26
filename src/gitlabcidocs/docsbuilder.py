@@ -24,11 +24,17 @@ class HTMLBuilder:
             {'value': v.typename if v.typename else '-'},
             {'value': v.choices_str if v.choices_str else '-'}
         ]
-        pipeline_name_row = [{'value': rule.pipeline_name, 'rowspan': len(rule.variables)}] if self._show_pipelinename_column else []
+        get_trigger_cell = lambda r: '<br>'.join([i for i in [
+            f'<b>if:</b> {r.condition}' if r.condition else '',
+            f'<b>when:</b> {r.when}' if r.when else ''
+        ] if i])
+        rowspan = len(rule.variables) if rule.variables else 1
+        pipeline_name_cell = [{'value': rule.pipeline_name, 'rowspan': rowspan}] if self._show_pipelinename_column else []
+
         first_row = self.row(
-            pipeline_name_row
-            + [{'value': f'if: {rule.condition}', 'rowspan': len(rule.variables)}]
-            + get_row_var_cells(rule.variables[0])
+            pipeline_name_cell
+            + [{'value': get_trigger_cell(rule), 'rowspan': rowspan}]
+            + (get_row_var_cells(rule.variables[0]) if rule.variables else [])
         )
         other_rows = '\n'.join([self.row(get_row_var_cells(v)) for v in rule.variables[1:]])
 
