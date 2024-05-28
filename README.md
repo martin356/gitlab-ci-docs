@@ -37,7 +37,7 @@ The tool can be used from command line or imported as module in a code. It requi
 - path to documentation file where generated table is inserted to
 
 ### Command line
-The packegs is called **glcidocs** and consumes following arguments:
+The packegs is called **gitlabcidocs** and consumes following arguments:
 - **--ci-file [**_optional_**]**
 <br>Path to the file containing workflow section.
 <br>Default value is *.gitlab-ci.yml*
@@ -46,17 +46,17 @@ The packegs is called **glcidocs** and consumes following arguments:
 <br>Default value is *README.md*
 
 ```bash
-python -m glcidocs --ci-file my_workflow.yml --doc-file myREADME.md
+python -m gitlabcidocs --ci-file my_workflow.yml --doc-file myREADME.md
 ```
 
 ### Import in code
-The module *glcidocs* contains *create_docs* function. The functions consumes the same arguments as cli tool, but there are no default values set.
+The module *gitlab-ci-docs* contains *create_docs* function. The functions consumes the same arguments as cli tool, but there are no default values set.
 ```python
-import glcidocs
+import gitlabcidocs
 
 
 def run_create_docs():
-    docs = glcidocs.create_docs(
+    docs = gitlabcidocs.create_docs(
         ci_file_path='my_workflow.yml',
         docs_file_path='README.md'
     )

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import List
-from pipelineparser import CiFileParser
-from docsbuilder import HTMLBuilder
+import pipelineparser
+import docsbuilder
 
 
 def read_doc_file(file_path: str|Path) -> List[str]:
@@ -41,8 +41,8 @@ def insert_to_doc_file(docs: str, doc_file_path: str|Path) -> None:
 
 
 def create_docs(ci_file_path: str|Path, doc_file_path: str|Path, include_all_rules: bool) -> str:
-    workflow = CiFileParser(ci_file_path).get_workflow(include_all_rules)
-    docs = HTMLBuilder(workflow).docs
+    workflow = pipelineparser.CiFileParser(ci_file_path).get_workflow(include_all_rules)
+    docs = docsbuilder.HTMLBuilder(workflow).docs
     insert_to_doc_file(docs, doc_file_path)
     return docs
 

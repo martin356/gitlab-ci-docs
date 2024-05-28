@@ -1,9 +1,7 @@
 import re
-
 from ruamel.yaml import YAML
 from typing import Dict, List
-
-from glcidocs.errors import BadVariableCommentFormatError
+from errors import BadVariableCommentFormatError
 
 
 class Variable:
