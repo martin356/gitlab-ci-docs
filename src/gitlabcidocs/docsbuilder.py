@@ -1,5 +1,5 @@
 from typing import List, Dict
-from pipelineparser import Workflow, Rule
+from pipelineparser import Workflow, Rule, Variable
 
 
 class HTMLBuilder:
@@ -16,27 +16,35 @@ class HTMLBuilder:
     def docs(self) -> str:
         return self._docs
 
-    def create_rule_rows(self, rule: Rule) -> str:
-        get_row_var_cells = lambda v: [
-            {'value': v.name},
-            {'value': v.value},
-            {'value': v.required_str},
-            {'value': v.typename if v.typename else '-'},
-            {'value': v.choices_str if v.choices_str else '-'}
+    def get_variable_cells(self, variable: Variable, is_mutable: bool) -> List[Dict[str, str]]:
+        cells = [
+            {'value': variable.name},
+            {'value': variable.value}
         ]
-        get_trigger_cell = lambda r: '<br>'.join([i for i in [
-            f'<b>if:</b> {r.condition}' if r.condition else '',
-            f'<b>when:</b> {r.when}' if r.when else ''
+        if is_mutable:
+            cells += [
+                {'value': variable.required_str},
+                {'value': variable.typename if variable.typename else '-'},
+                {'value': variable.choices_str if variable.choices_str else '-'}
+            ]
+        return cells
+
+    def get_trigger_cell(self, rule: Rule) -> str:
+        return '<br>'.join([i for i in [
+            f'<b>if:</b> {rule.condition}' if rule.condition else '',
+            f'<b>when:</b> {rule.when}' if rule.when else ''
         ] if i])
+
+    def create_rule_rows(self, rule: Rule) -> str:
         rowspan = len(rule.variables) if rule.variables else 1
         pipeline_name_cell = [{'value': rule.pipeline_name, 'rowspan': rowspan}] if self._show_pipelinename_column else []
 
         first_row = self.row(
             pipeline_name_cell
-            + [{'value': get_trigger_cell(rule), 'rowspan': rowspan}]
-            + (get_row_var_cells(rule.variables[0]) if rule.variables else [])
+            + [{'value': self.get_trigger_cell(rule), 'rowspan': rowspan}]
+            + (self.get_variable_cells(rule.variables[0], rule.is_mutable) if rule.variables else [])
         )
-        other_rows = '\n'.join([self.row(get_row_var_cells(v)) for v in rule.variables[1:]])
+        other_rows = '\n'.join([self.row(self.get_variable_cells(v, rule.is_mutable)) for v in rule.variables[1:]])
 
         return first_row + other_rows
 

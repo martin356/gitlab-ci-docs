@@ -68,6 +68,8 @@ class Variable:
 
 class Rule:
 
+    _regex_pipeline_source = '\$CI_PIPELINE_SOURCE\s==\s[\'"]?(web|pipeline|api|trigger)[\'"]?'
+
     def __init__(self, rule: Dict):
         self._pipeline_name = ''
         self._condition = rule.get('if', None)
@@ -80,6 +82,10 @@ class Rule:
             ) for key in rule.get('variables', {}) if key != 'PIPELINE_NAME'
         ]
         self._pipeline_name = rule.get('variables', {}).get('PIPELINE_NAME', '')
+
+    @property
+    def is_mutable(self) -> bool:
+        return bool(re.search(self._regex_pipeline_source, self.condition))
 
     @property
     def condition(self) -> str:
@@ -100,15 +106,9 @@ class Rule:
 
 class Workflow:
 
-    _regex_pipeline_source = '\$CI_PIPELINE_SOURCE\s==\s[\'"]?(web|pipeline|api|trigger)[\'"]?'
-
-    @classmethod
-    def _include_rule(cls, rule_if: str) -> bool:
-        return bool(re.search(cls._regex_pipeline_source, rule_if))
-
     def __init__(self, workflow: Dict, include_all_rules: bool):
         self._pipeline_name = workflow.get('name', '')
-        self._rules = [Rule(r) for r in workflow['rules'] if include_all_rules or self._include_rule(r['if'])]
+        self._rules = [rule for rule in [Rule(r) for r in workflow['rules']] if include_all_rules or rule.is_mutable]
 
     @property
     def rules(self) -> List[Rule]:
