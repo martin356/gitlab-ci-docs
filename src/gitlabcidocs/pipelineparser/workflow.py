@@ -6,7 +6,7 @@ class Workflow:
 
     def __init__(self, workflow: Dict, include_all_rules: bool):
         self._pipeline_name = workflow.get('name', '')
-        self._rules = [rule for rule in [Rule(r) for r in workflow['rules']] if include_all_rules or rule.is_mutable]
+        self._rules = [rule for rule in [Rule(r) for r in workflow['rules']] if include_all_rules or rule.has_mutable_vars]
 
     @property
     def rules(self) -> List[Rule]:

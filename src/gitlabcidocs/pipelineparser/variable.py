@@ -18,7 +18,7 @@ class Variable:
         self._choices = []
         self._typename = ''
         self._is_const = const
-        self._is_described = bool(comment)
+        self._is_described = False
 
         if (comment := comment.strip()) and comment != '#':
             if (matched := re.fullmatch(self._regex, comment)) is None:
@@ -26,6 +26,7 @@ class Variable:
             if matched['options'] and matched['type']:
                 raise VariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
 
+            self._is_described = True
             self._required = bool(matched['required'])
             self._choices = list(set(matched['options'].split('|'))) if matched['options'] else []
             self._typename = matched['type'][1:] if matched['type'] else None
