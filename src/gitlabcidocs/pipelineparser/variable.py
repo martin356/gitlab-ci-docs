@@ -1,6 +1,5 @@
 import re
-from ruamel.yaml import YAML
-from typing import Dict, List
+from typing import List
 from errors import VariableCommentFormatError
 
 
@@ -64,70 +63,3 @@ class Variable:
     @property
     def typename(self) -> str:
         return self._typename
-
-
-class Rule:
-
-    _regex_pipeline_source = '\$CI_PIPELINE_SOURCE\s==\s[\'"]?(web|pipeline|api|trigger)[\'"]?'
-
-    def __init__(self, rule: Dict):
-        self._pipeline_name = ''
-        self._condition = rule.get('if', '')
-        self._when = rule.get('when', None)
-        self._variables = [
-            Variable(
-                name=key,
-                value=rule['variables'][key],
-                comment=c[2].value if (c := rule['variables'].ca.items.get(key, None)) else ''
-            ) for key in rule.get('variables', {}) if key != 'PIPELINE_NAME'
-        ]
-        self._pipeline_name = rule.get('variables', {}).get('PIPELINE_NAME', '')
-
-    @property
-    def is_mutable(self) -> bool:
-        return bool(re.search(self._regex_pipeline_source, self.condition))
-
-    @property
-    def condition(self) -> str:
-        return self._condition
-
-    @property
-    def when(self):
-        return self._when
-
-    @property
-    def variables(self) -> List[Variable]:
-        return self._variables
-
-    @property
-    def pipeline_name(self) -> str:
-        return self._pipeline_name
-
-
-class Workflow:
-
-    def __init__(self, workflow: Dict, include_all_rules: bool):
-        self._pipeline_name = workflow.get('name', '')
-        self._rules = [rule for rule in [Rule(r) for r in workflow['rules']] if include_all_rules or rule.is_mutable]
-
-    @property
-    def rules(self) -> List[Rule]:
-        return self._rules
-
-    @property
-    def pipeline_name(self) -> str:
-        return self._pipeline_name
-
-    @property
-    def pipeline_name_in_rules(self):
-        return any(r.pipeline_name for r in self.rules)
-
-
-class CiFileParser:
-
-    def __init__(self, filepath: str):
-        with open(filepath) as f:
-            self._pipeline = YAML().load(f)
-
-    def get_workflow(self, include_all_rules: bool) -> Workflow:
-        return Workflow(self._pipeline['workflow'], include_all_rules)

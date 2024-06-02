@@ -1,5 +1,7 @@
 from typing import List, Dict
-from pipelineparser import Workflow, Rule, Variable
+from pipelineparser.workflow import Workflow
+from pipelineparser.rule import Rule
+from pipelineparser.variable import Variable
 
 
 class HTMLBuilder:
