@@ -2,9 +2,9 @@
 <b>Pipeline worflow</b>
 <table>
 <tr><th>Pipeline name</th><th>Trigger</th><th>Variable</th><th>Default value</th><th>Required</th><th>Type</th><th>Choices</th></tr>
-<tr><td rowspan="3">Deployment to $ENV</td><td rowspan="3"><b>if:</b> $CI_PIPELINE_SOURCE == 'web'</td><td>ENV</td><td>none</td><td>Yes</td><td>-</td><td>prod, dev, test</td></tr><tr><td>ACC_ID</td><td>None</td><td>Yes</td><td>str</td><td>-</td></tr>
-<tr><td>LOG_LEVEL</td><td>debug</td><td>No</td><td>-</td><td>debug, error, critical, info</td></tr>
-<tr><td rowspan="3">hmm</td><td rowspan="3"><b>if:</b> $CI_PIPELINE_SOURCE == 'api' || $CI_COMMIT_BRANCH == 'main'</td><td>ENV</td><td>stage</td><td>Yes</td><td>-</td><td>prod, dev, test</td></tr><tr><td>ACC_ID</td><td>None</td><td>Yes</td><td>str</td><td>-</td></tr>
+<tr><td rowspan="3">Deployment to $ENV</td><td rowspan="3"><b>if:</b> $CI_PIPELINE_SOURCE == 'web'</td><td>ENV</td><td>none</td><td>Yes</td><td>-</td><td>dev, prod, test</td></tr><tr><td>ACC_ID</td><td>None</td><td>Yes</td><td>str</td><td>-</td></tr>
+<tr><td>LOG_LEVEL</td><td>debug</td><td>No</td><td>-</td><td>critical, info, error, debug</td></tr>
+<tr><td rowspan="3">hmm</td><td rowspan="3"><b>if:</b> $CI_PIPELINE_SOURCE == 'api' || $CI_COMMIT_BRANCH == 'main'</td><td>ENV</td><td>stage</td><td>Yes</td><td>-</td><td>dev, prod, test</td></tr><tr><td>ACC_ID</td><td>None</td><td>Yes</td><td>str</td><td>-</td></tr>
 <tr><td>CONST</td><td>const</td></tr>
 <tr><td></td><td><b>if:</b> $CI_COMMIT_BRANCH != 'main'<br><b>when:</b> never</td></tr>
 <tr><td></td><td><b>if:</b> $CI_COMMIT_TAG</td><td>ENV</td><td>bla</td></tr>
