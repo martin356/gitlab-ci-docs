@@ -1,19 +1,11 @@
+## Motivation
+Let's assume the design when we want to trigger a pipeline from web UI or by an API call. The pipeline consumes variables as input. It would be very helpful to know the type of a variable or its valid options. This kind of information is usually part of the documentation. This package provides functionality to automate the creation of this documentation.
+
+<img alt="Generated table example" src="doc/table_sample.PNG">
+
 ## Overview
-
-The CI/CD solution by gitlba is great, however it has some limitations. The way how a pipeline is defined is definitelly one of thme. There's nothing woring about YAML itself, but gitlab pipeline is so complex to be written in a markup language.
-
-For instance, let's assume there is the design where we want to trigger a pipeline from web UI or by API call. The pipeline consumes variables as input. There is no way how to define variable's type, options or if it's required or if it shouldn't be overriden. This sort of information is always part of a documentation. This package provides functionality to create simple documentation of *workflow* section, which can contain all of these infromation.
-
-In my opinion, the *workflow* section should be part of every clean/nice pipeline definition ("code").
-Let's define the naming convention, which covers some scenarios, and all other information write to comment. I know, comments sound awful, but it is the most safe way to achieve what we need.
-
-## How does it work
 The output of this script is simple description (documentation) of *workflow* section. It parses workflow section and inserts it to readme file. Currently, output documentation is only as html table.
-
-### Readme file
-By default, the script inserts generated table in the beggining of the file. However, it is possible to mark position in the file where the table will be inserted. The mark token is *\<!--PIPELINE_DOCS-->*
-
-If token is present, the table is insreted below it.
+<br>Properties of variables are defined in comment using the format described in following section.
 
 ### Variable definition
 As mentioned before, we write all parameters of a variable to a comment. Format of a comment is very simple.
@@ -31,19 +23,49 @@ ACCOUNT_ALIAS: null  # required :str
 IMAGE_TAG: 0.1.0  # :version
 ```
 
+### Pipeline name
+Using of the pipeline name improves readability of pipeline runs and also describes the task executed by the pipeline.
+
+Variable **PIPELINE_NAME** is showed in the separated column of the table.
+
 ## Usage
-The tool can be used from command line or imported as module in a code. It requires only two parameters on input:
-- path to yaml file containing thw *workflow* section
-- path to documentation file where generated table is inserted to
+The tool can be used from command line or imported as module in a code. Output is written to the readme file.
+
+### Insert to the Readme
+By default, the script inserts generated table in the beggining of the file. However, it is possible to mark position in the file where the table will be inserted. The mark token is <br>*\<!--PIPELINE_DOCS-->*
+
+If token is present, the table is insreted below it.
 
 ### Command line
-The packegs is called **gitlabcidocs** and consumes following arguments:
-- **--ci-file [**_optional_**]**
-<br>Path to the file containing workflow section.
-<br>Default value is *.gitlab-ci.yml*
-- **--doc-file [**_optional_**]**
-<br>Path to the output file.
-<br>Default value is *README.md*
+The package  **gitlabcidocs** consumes following arguments:
+<ul>
+    <li><b>--ci-file</b> <i>[optional]</i></li>
+    <ul style="list-style-type:none;">
+        <li>Path to the file containing workflow section.</li>
+        <li>Default value is <i>.gitlab-ci.yml</i></li>
+    </ul>
+</ul>
+<ul>
+    <li><b>--doc-file</b> <i>[optional]</i></li>
+    <ul style="list-style-type:none;">
+        <li>Path to the output file.</li>
+        <li>Default value is <i>README.md</i></li>
+    </ul>
+</ul>
+<ul>
+    <li><b>--include-all-rules, -a</b> <i>[optional]</i></li>
+    <ul style="list-style-type:none;">
+        <li>If set to *true*, all rules in the workflow section are included. Otherwise only rules which includes $CI_PIPELINE_SOURCE==web|api|pipeline in the if statement are documented.</li>
+        <li>Default is <i>true</i></li>
+    </ul>
+</ul>
+<ul>
+    <li><b>--include-global-vars, -g</b> <i>[optional]</i></li>
+    <ul style="list-style-type:none;">
+        <li>If set, global variables section is included.</li>
+        <li>Default value is <i>false</i></li>
+    </ul>
+</ul>
 
 ```bash
 python -m gitlabcidocs --ci-file my_workflow.yml --doc-file myREADME.md

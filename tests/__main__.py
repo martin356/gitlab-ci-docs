@@ -1,6 +1,6 @@
 import sys
 import pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'src'))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'src' ))
 
 import argparse
 import unittest
@@ -28,6 +28,7 @@ if __name__ == '__main__':
         testmodules = [importlib.import_module(str(i.stem)) for i in py_items if i.is_file()]
         testcases = [a for m in testmodules for a in [getattr(m, i) for i in dir(m)] if is_test_case(a)]
 
-        suite = unittest.TestSuite([unittest.makeSuite(t) for t in set(testcases)])
+        loader = unittest.TestLoader()
+        suite = unittest.TestSuite([loader.loadTestsFromTestCase(t) for t in set(testcases)])
         runner = unittest.TextTestRunner(verbosity=2)
         runner.run(suite)

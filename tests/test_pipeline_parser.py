@@ -1,11 +1,11 @@
 from basetestcase import BaseTestCase
-from glcidocs.pipelineparser import Variable, Workflow
-from glcidocs.errors import BadVariableCommentFormatError
+from gitlabcidocs.pipelineparser import Variable, Rule
+import gitlabcidocs.errors as errors
 
 
-class WorkflowTestCase(BaseTestCase):
+class RuleTestCase(BaseTestCase):
 
-    def test_parse_rule_if_condition__include_rule(self):
+    def test_is_mutable(self):
         rules = [r for source in ['web', 'pipeline', 'trigger', 'api'] for r in [
             f'$CI_PIPELINE_SOURCE == \'{source}\'',
             f'$CI_PIPELINE_SOURCE == "{source}"',
@@ -14,7 +14,7 @@ class WorkflowTestCase(BaseTestCase):
         rules += [f'$CI_COMMIT_BRANCH == "main" && {r}' for r in rules]
         rules += [f'{r} || $CI_COMMIT_BRANCH == "main"' for r in rules]
         for r in rules:
-            self.assertTrue(Workflow._include_rule(r))
+            self.assertTrue(Rule({'if': r}).is_mutable)
 
 
 class VriableTestCase(BaseTestCase):
@@ -53,7 +53,7 @@ class VriableTestCase(BaseTestCase):
 
     def test_parse_comment__choices_invalid_chars(self):
         for char in '*/";,:+':
-            with self.assertRaises(BadVariableCommentFormatError):
+            with self.assertRaises(errors.BadVariableCommentFormatError):
                 Variable('env', 'dev', comment=f'dev{char}dev')
 
     def test_parse_comment__typename(self):
@@ -71,7 +71,7 @@ class VriableTestCase(BaseTestCase):
     def test_parse_comment__typename_invalid_chars(self):
         comments = [f'# :dev{char}dev' for char in '*/";,:-_+']
         for c in comments + ['::str', ':str|dev']:
-            with self.assertRaises(BadVariableCommentFormatError):
+            with self.assertRaises(errors.BadVariableCommentFormatError):
                 Variable('env', 'dev', c)
 
 

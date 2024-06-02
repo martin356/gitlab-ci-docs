@@ -1,7 +1,7 @@
 import re
 from ruamel.yaml import YAML
 from typing import Dict, List
-from errors import BadVariableCommentFormatError
+from errors import VariableCommentFormatError
 
 
 class Variable:
@@ -21,9 +21,9 @@ class Variable:
 
         if (comment := comment.strip()) and comment != '#':
             if (matched := re.fullmatch(self._regex, comment)) is None:
-                raise BadVariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
+                raise VariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
             if matched['options'] and matched['type']:
-                raise BadVariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
+                raise VariableCommentFormatError(f'Variable comment ({comment}) has invalid format. Valid format: {self._regex}')
 
             self._required = bool(matched['required'])
             self._choices = list(set(matched['options'].split('|'))) if matched['options'] else []
@@ -72,7 +72,7 @@ class Rule:
 
     def __init__(self, rule: Dict):
         self._pipeline_name = ''
-        self._condition = rule.get('if', None)
+        self._condition = rule.get('if', '')
         self._when = rule.get('when', None)
         self._variables = [
             Variable(
