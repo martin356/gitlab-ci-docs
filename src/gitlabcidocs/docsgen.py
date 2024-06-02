@@ -40,11 +40,23 @@ def insert_to_doc_file(docs: str, doc_file_path: str|Path) -> None:
     write_doc_file(doc_file_path, ''.join(out_lines))
 
 
-def create_docs(ci_file_path: str|Path, doc_file_path: str|Path, include_all_rules: bool) -> str:
-    workflow = pipelineparser.CiFileParser(ci_file_path).get_workflow(include_all_rules)
-    docs = docsbuilder.HTMLBuilder(workflow).docs
-    insert_to_doc_file(docs, doc_file_path)
-    return docs
+def create_docs(
+        ci_file_path: str|Path,
+        doc_file_path: str|Path,
+        include_all_rules: bool = False,
+        include_global_vars: bool = False) -> str:
+    ci_parser = pipelineparser.CiFileParser(ci_file_path)
+    htmlbuilder = docsbuilder.HTMLBuilder()
+
+    workflow = ci_parser.get_workflow(include_all_rules)
+    result_html = htmlbuilder.get_workflow_table(workflow)
+    if include_global_vars:
+        global_vars = ci_parser.get_global_variables()
+        result_html += '\n' + htmlbuilder.get_global_vars_table(global_vars)
+
+    insert_to_doc_file(result_html, doc_file_path)
+
+    return result_html
 
 
 

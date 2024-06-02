@@ -11,12 +11,14 @@ class Variable:
     _regex_group_opt = property(lambda s: f'(?P<options>{s._regex_value_regex}+(\|{s._regex_value_regex}+)*)?')
     _regex = property(lambda s: f'^#\s*{s._regex_group_req}{s._regex_group_type}{s._regex_group_opt}$')
 
-    def __init__(self, name: str, value: str, comment: str):
+    def __init__(self, name: str, value: str, comment: str, const: bool = False):
         self._name = name
         self._value = value
         self._required = False
         self._choices = []
         self._typename = ''
+        self._is_const = const
+        self._is_described = bool(comment)
 
         if (comment := comment.strip()) and comment != '#':
             if (matched := re.fullmatch(self._regex, comment)) is None:
@@ -63,3 +65,11 @@ class Variable:
     @property
     def typename(self) -> str:
         return self._typename
+
+    @property
+    def is_const(self) -> bool:
+        return self._is_const or self.name.startswith('_')
+
+    @property
+    def is_described(self) -> bool:
+        return self._is_described
